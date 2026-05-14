@@ -10,9 +10,6 @@ RUN apk add --no-cache gettext
 # Copia os binários e diretórios oficiais do Prometheus do primeiro estágio
 COPY --from=prometheus_base /bin/prometheus /bin/prometheus
 COPY --from=prometheus_base /bin/promtool /bin/promtool
-COPY --from=prometheus_base /etc/prometheus /etc/prometheus
-COPY --from=prometheus_base /usr/share/prometheus/console_libraries /usr/share/prometheus/console_libraries
-COPY --from=prometheus_base /usr/share/prometheus/consoles /usr/share/prometheus/consoles
 
 # Cria o diretório de storage e ajusta as permissões (o Alpine já tem o usuário nobody)
 RUN mkdir -p /prometheus && chown -R nobody:nobody /etc/prometheus /prometheus
