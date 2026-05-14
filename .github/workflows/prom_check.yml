@@ -7,10 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  validate-config:
+  validate-prometheus:
     runs-on: ubuntu-latest
-    container:
-      image: prom/prometheus:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,23 +16,16 @@ jobs:
       - name: Validate Prometheus Config
         run: |
           # Valida todos os arquivos .yml do Prometheus
-          cd prometheus/config/
-          promtool check config prometheus.yml
-
-# Validação de regras (por ora, vou deixar comentado)
-#      - name: Validate Alertmanager Config
-#        run: |
-#          promtool check rules rules/*.yml
+          docker run --rm -v $(pwd):/work -w /work/prometheus/config \
+          prom/prometheus:latest check config prometheus.yml
 
   validate-alertmanager:
     runs-on: ubuntu-latest
-    container:
-      image: prom/alertmanager:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Validate Alertmanager Config
         run: |
-          cd alertmanager/config/
-          amtool check-config alertmanager.yml
+          docker run --rm -v $(pwd):/work -w /work/alertmanager/config \
+          prom/alertmanager:latest check-config alertmanager.yml
