@@ -12,7 +12,7 @@ COPY --from=prometheus_base /bin/prometheus /bin/prometheus
 COPY --from=prometheus_base /bin/promtool /bin/promtool
 
 # Cria o diretório de storage e ajusta as permissões (o Alpine já tem o usuário nobody)
-RUN mkdir -p /prometheus && chown -R nobody:nobody /etc/prometheus /prometheus
+RUN mkdir -p /etc/prometheus /prometheus && chown -R nobody:nobody /etc/prometheus /prometheus
 
 # Copia o arquivo de configuração customizado
 COPY config/prometheus.yml /etc/prometheus/prometheus.yml.template
