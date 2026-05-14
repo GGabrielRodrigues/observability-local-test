@@ -1,13 +1,24 @@
-# Usa a imagem oficial e mais recente do Prometheus
-FROM prom/prometheus:latest
+# Estágio 1: Baixa a imagem oficial do Prometheus apenas para extrair os binários
+FROM prom/prometheus:latest AS prometheus_base
+
+# Estágio 2: Cria a imagem final usando o Alpine
+FROM alpine:latest
 
 USER root
 RUN apk add --no-cache gettext
 
-# Copia o arquivo de configuração customizado para o caminho padrão dentro do container
-COPY config/prometheus.yml /etc/prometheus/prometheus.yml.template
+# Copia os binários e diretórios oficiais do Prometheus do primeiro estágio
+COPY --from=prometheus_base /bin/prometheus /bin/prometheus
+COPY --from=prometheus_base /bin/promtool /bin/promtool
+COPY --from=prometheus_base /etc/prometheus /etc/prometheus
+COPY --from=prometheus_base /usr/share/prometheus/console_libraries /usr/share/prometheus/console_libraries
+COPY --from=prometheus_base /usr/share/prometheus/consoles /usr/share/prometheus/consoles
 
-RUN chown -R nobody:nobody /etc/prometheus
+# Cria o diretório de storage e ajusta as permissões (o Alpine já tem o usuário nobody)
+RUN mkdir -p /prometheus && chown -R nobody:nobody /etc/prometheus /prometheus
+
+# Copia o arquivo de configuração customizado
+COPY config/prometheus.yml /etc/prometheus/prometheus.yml.template
 
 USER nobody
 
