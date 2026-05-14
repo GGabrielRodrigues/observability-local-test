@@ -17,7 +17,8 @@ jobs:
         run: |
           # Valida todos os arquivos .yml do Prometheus
           docker run --rm -v $(pwd):/work -w /work/prometheus/config \
-          prom/prometheus:latest promtool check config prometheus.yml
+          --entrypoint promtool \
+          prom/prometheus:latest check config prometheus.yml
 
   validate-alertmanager:
     runs-on: ubuntu-latest
@@ -28,4 +29,5 @@ jobs:
       - name: Validate Alertmanager Config
         run: |
           docker run --rm -v $(pwd):/work -w /work/alertmanager/config \
-          prom/alertmanager:latest amtool check-config alertmanager.yml
+          --entrypoint amtool \
+          prom/alertmanager:latest check-config alertmanager.yml
